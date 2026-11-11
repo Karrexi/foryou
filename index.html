@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Для тебя</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
 <style>
@@ -10,7 +10,9 @@
   
   body {
     font-family: 'Montserrat', sans-serif;
-    min-height: 100vh;
+    /* 100dvh учитывает адресную строку мобильного браузера */
+    min-height: 100dvh;
+    min-height: 100vh; /* fallback для старых браузеров */
     overflow: hidden;
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364, #00d2ff);
     background-size: 300% 300%;
@@ -38,7 +40,6 @@
     z-index: 1;
   }
 
-  /* Расходящийся круг (рябь) */
   .ripple {
     position: absolute;
     border-radius: 50%;
@@ -49,21 +50,10 @@
   }
 
   @keyframes rippleEffect {
-    0% {
-      width: 0px;
-      height: 0px;
-      opacity: 1;
-      border-width: 4px;
-    }
-    100% {
-      width: 600px;
-      height: 600px;
-      opacity: 0;
-      border-width: 1px;
-    }
+    0% { width: 0px; height: 0px; opacity: 1; border-width: 4px; }
+    100% { width: 600px; height: 600px; opacity: 0; border-width: 1px; }
   }
 
-  /* Падающая капля */
   .drop {
     position: absolute;
     width: 15px;
@@ -74,7 +64,6 @@
     transform: translate(-50%, -50%);
   }
 
-  /* Всплеск в момент удара */
   .splash {
     position: absolute;
     width: 40px;
@@ -94,10 +83,13 @@
     position: relative;
     z-index: 10;
     text-align: center;
-    padding: 40px;
-    max-width: 600px;
+    /* Адаптивная ширина для идеального центра на любом телефоне */
+    width: 90vw;
+    max-width: 500px;
+    padding: 30px 20px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* для Safari на iPhone */
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -111,29 +103,32 @@
 
   h1 {
     font-family: 'Caveat', cursive;
-    font-size: 4rem;
+    font-size: 3.5rem; /* Чуть меньше для мобильных */
     text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    line-height: 1.2;
   }
 
   .buttons {
-    margin-top: 40px;
+    margin-top: 30px;
     display: flex;
-    gap: 25px;
+    gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
   }
 
   button {
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 500;
-    padding: 15px 40px;
+    padding: 15px 35px;
     border: none;
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    /* Чтобы кнопки не вылезали на очень узких экранах */
+    max-width: 100%;
   }
 
   .btn-yes {
@@ -141,9 +136,8 @@
     color: #fff;
     border: 1px solid rgba(255,255,255,0.3);
   }
-  .btn-yes:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 30px rgba(0, 210, 255, 0.4);
+  .btn-yes:active {
+    transform: scale(0.95);
   }
 
   .btn-no {
@@ -155,12 +149,22 @@
 
   .final-text {
     font-family: 'Caveat', cursive;
-    font-size: 4rem;
+    font-size: 3.5rem;
     animation: glow 2s ease-in-out infinite alternate;
+    line-height: 1.2;
   }
+  
   @keyframes glow {
     from { text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(0,210,255,0.5); }
     to   { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(0,210,255,0.8), 0 0 60px rgba(0,210,255,0.6); }
+  }
+
+  /* Специальные правки для очень маленьких экранов */
+  @media (max-width: 400px) {
+    h1 { font-size: 2.8rem; }
+    .final-text { font-size: 2.8rem; }
+    button { padding: 12px 25px; font-size: 1rem; width: 100%; }
+    .buttons { flex-direction: column; }
   }
 </style>
 </head>
@@ -171,21 +175,20 @@
 <div class="scene" id="questionScene">
   <h1>Пойдёшь гулять<br>со мной завтра?</h1>
   <div class="buttons">
-    <button class="btn-yes" onclick="sayYes()">Да</button>
-    <button class="btn-no" id="noBtn" onmouseover="runAway()" onclick="runAway()">Нет</button>
+    <button class="btn-yes" onclick="sayYes()">Да 💙</button>
+    <!-- Добавлен ontouchstart для работы на телефонах! -->
+    <button class="btn-no" id="noBtn" onmouseover="runAway()" ontouchstart="runAway()" onclick="runAway()">Нет</button>
   </div>
 </div>
 
 <div class="scene" id="finalScene">
-  <p class="final-text">Ура! До завтра!</p>
+  <p class="final-text">Ура!<br>До завтра! 💦</p>
 </div>
 
 <script>
   const container = document.getElementById('rippleContainer');
 
-  // Создаём круги ряби в точке падения
   function createRipples(x, y) {
-    // Создаём 5 концентрических кругов с задержкой
     for (let i = 0; i < 5; i++) {
       setTimeout(() => {
         const ripple = document.createElement('div');
@@ -198,7 +201,6 @@
     }
   }
 
-  // Создаём всплеск в момент удара
   function createSplash(x, y) {
     const splash = document.createElement('div');
     splash.className = 'splash';
@@ -208,7 +210,6 @@
     setTimeout(() => splash.remove(), 800);
   }
 
-  // Капля падает в случайную точку экрана
   function dropFalls() {
     const x = Math.random() * window.innerWidth;
     const y = 150 + Math.random() * (window.innerHeight - 300);
@@ -219,7 +220,6 @@
     drop.style.top = '0px';
     container.appendChild(drop);
     
-    // Анимируем падение капли через JS
     const duration = 600 + Math.random() * 400;
     const startTime = performance.now();
     
@@ -246,32 +246,29 @@
     requestAnimationFrame(animateDrop);
   }
 
-  // Запускаем капли с интервалом
   let dropInterval = setInterval(() => {
     dropFalls();
   }, 400);
 
-  // Через 2 секунды показываем вопрос
   setTimeout(() => {
     document.getElementById('questionScene').classList.add('visible');
   }, 2000);
 
-  // Кнопка "Нет" убегает
   function runAway() {
     const btn = document.getElementById('noBtn');
-    const maxX = window.innerWidth - btn.offsetWidth - 40;
-    const maxY = window.innerHeight - btn.offsetHeight - 40;
-    const x = Math.max(20, Math.random() * maxX);
-    const y = Math.max(20, Math.random() * maxY);
+    // Ограничиваем, чтобы кнопка не улетала за пределы экрана телефона
+    const maxX = window.innerWidth - btn.offsetWidth - 20;
+    const maxY = window.innerHeight - btn.offsetHeight - 20;
+    const x = Math.max(10, Math.random() * maxX);
+    const y = Math.max(10, Math.random() * maxY);
     
     btn.style.position = 'fixed';
     btn.style.left = x + 'px';
     btn.style.top = y + 'px';
-    btn.style.transition = 'all 0.25s ease-out';
+    btn.style.transition = 'all 0.2s ease-out';
     btn.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
   }
 
-  // Ответ "Да"
   function sayYes() {
     clearInterval(dropInterval);
     
