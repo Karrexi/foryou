@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364, #00d2ff);
+    background-size: 300% 300%;
+    animation: waterFlow 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    position: relative;
+  }
+
+  @keyframes waterFlow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .ripple-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Расходящийся круг (рябь) */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) scale(0);
+    animation: rippleEffect 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  @keyframes rippleEffect {
+    0% {
+      width: 0px;
+      height: 0px;
+      opacity: 1;
+      border-width: 4px;
+    }
+    100% {
+      width: 600px;
+      height: 600px;
+      opacity: 0;
+      border-width: 1px;
+    }
+  }
+
+  /* Падающая капля */
+  .drop {
+    position: absolute;
+    width: 15px;
+    height: 35px;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,1), rgba(200,230,255,0.9));
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(200,230,255,0.5);
+    transform: translate(-50%, -50%);
+  }
+
+  /* Всплеск в момент удара */
+  .splash {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,0));
+    transform: translate(-50%, -50%) scale(0);
+    animation: splashEffect 0.8s ease-out forwards;
+  }
+
+  @keyframes splashEffect {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+  }
+
+  .scene {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 40px;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  .scene.visible {
+    opacity: 1;
+  }
+
+  h1 {
+    font-family: 'Caveat', cursive;
+    font-size: 4rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    margin-bottom: 30px;
+  }
+
+  .buttons {
+    margin-top: 40px;
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .btn-yes:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 210, 255, 0.4);
+  }
+
+  .btn-no {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+  }
+
+  .final-text {
+    font-family: 'Caveat', cursive;
+    font-size: 4rem;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(0,210,255,0.5); }
+    to   { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(0,210,255,0.8), 0 0 60px rgba(0,210,255,0.6); }
+  }
+</style>
+</head>
+<body>
+
+<div class="ripple-container" id="rippleContainer"></div>
+
+<div class="scene" id="questionScene">
+  <h1>Пойдёшь гулять<br>со мной завтра?</h1>
+  <div class="buttons">
+    <button class="btn-yes" onclick="sayYes()">Да</button>
+    <button class="btn-no" id="noBtn" onmouseover="runAway()" onclick="runAway()">Нет</button>
+  </div>
+</div>
+
+<div class="scene" id="finalScene">
+  <p class="final-text">Ура! До завтра!</p>
+</div>
+
+<script>
+  const container = document.getElementById('rippleContainer');
+
+  // Создаём круги ряби в точке падения
+  function createRipples(x, y) {
+    // Создаём 5 концентрических кругов с задержкой
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        container.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 3000);
+      }, i * 300);
+    }
+  }
+
+  // Создаём всплеск в момент удара
+  function createSplash(x, y) {
+    const splash = document.createElement('div');
+    splash.className = 'splash';
+    splash.style.left = x + 'px';
+    splash.style.top = y + 'px';
+    container.appendChild(splash);
+    setTimeout(() => splash.remove(), 800);
+  }
+
+  // Капля падает в случайную точку экрана
+  function dropFalls() {
+    const x = Math.random() * window.innerWidth;
+    const y = 150 + Math.random() * (window.innerHeight - 300);
+    
+    const drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.left = x + 'px';
+    drop.style.top = '0px';
+    container.appendChild(drop);
+    
+    // Анимируем падение капли через JS
+    const duration = 600 + Math.random() * 400;
+    const startTime = performance.now();
+    
+    function animateDrop(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = progress * progress;
+      
+      const currentY = easedProgress * y;
+      drop.style.top = currentY + 'px';
+      
+      const stretch = 1 + progress * 0.5;
+      drop.style.transform = `translate(-50%, -50%) scaleY(${stretch})`;
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateDrop);
+      } else {
+        drop.remove();
+        createSplash(x, y);
+        createRipples(x, y);
+      }
+    }
+    
+    requestAnimationFrame(animateDrop);
+  }
+
+  // Запускаем капли с интервалом
+  let dropInterval = setInterval(() => {
+    dropFalls();
+  }, 400);
+
+  // Через 2 секунды показываем вопрос
+  setTimeout(() => {
+    document.getElementById('questionScene').classList.add('visible');
+  }, 2000);
+
+  // Кнопка "Нет" убегает
+  function runAway() {
+    const btn = document.getElementById('noBtn');
+    const maxX = window.innerWidth - btn.offsetWidth - 40;
+    const maxY = window.innerHeight - btn.offsetHeight - 40;
+    const x = Math.max(20, Math.random() * maxX);
+    const y = Math.max(20, Math.random() * maxY);
+    
+    btn.style.position = 'fixed';
+    btn.style.left = x + 'px';
+    btn.style.top = y + 'px';
+    btn.style.transition = 'all 0.25s ease-out';
+    btn.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
+  }
+
+  // Ответ "Да"
+  function sayYes() {
+    clearInterval(dropInterval);
+    
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        createSplash(x, y);
+        createRipples(x, y);
+      }, i * 100);
+    }
+    
+    setTimeout(() => {
+      document.getElementById('questionScene').classList.remove('visible');
+      setTimeout(() => {
+        document.getElementById('finalScene').classList.add('visible');
+      }, 500);
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
